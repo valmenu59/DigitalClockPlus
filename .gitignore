@@ -1,0 +1,9 @@
+.idea
+.clang-format
+/build*/
+/compile_commands.json
+.clangd
+.cache
+.vscode
+.qmlls.ini
+/plugin/.qmlls.ini

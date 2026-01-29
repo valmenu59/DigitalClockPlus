@@ -117,20 +117,7 @@ MouseArea {
             const value = parseInt(Plasmoid.configuration.informationDisplayFormat);
             return (value === 2 || value === 3);
         }
-        /*
-        if (Plasmoid.configuration.dateDisplayFormat === 1) {
-            // BesideTime
-            return true;
-        } else if (Plasmoid.configuration.dateDisplayFormat === 2) {
-            // BelowTime
-            return false;
-        } else {
-            // Adaptive
-            return Plasmoid.formFactor === PlasmaCore.Types.Horizontal &&
-                height <= 2 * Kirigami.Theme.smallFont.pixelSize &&
-                (Plasmoid.configuration.showDate || timeZoneLabel.visible);
-        }
-        */
+        
     }
 
     property bool wasExpanded
@@ -142,8 +129,9 @@ MouseArea {
     Clock {
         id: clock
         timeZone: Plasmoid.configuration.lastSelectedTimezone
-        // useless to track seconds if it uses nowhere
-        trackSeconds: !(Plasmoid.configuration.showSeconds === 0 && Plasmoid.configuration.timeFormat === "custom" && (customDate.contains("s") || customDate.contains("ss"))) 
+        // useless to track seconds if it shows nowhere
+        trackSeconds: !(Plasmoid.configuration.showSeconds === 0 && (Plasmoid.configuration.timeFormat === "timeCustom" && 
+            !(Plasmoid.configuration.customTimeFormat.contains("s") || Plasmoid.configuration.customTimeFormat.contains("ss")))) 
         onDateTimeChanged: main.dateTimeChanged()
         onTimeZoneChanged: main.setupLabels()
     }
@@ -209,21 +197,19 @@ MouseArea {
                 main.Layout.minimumWidth: contentItem.width
                 main.Layout.maximumWidth: main.Layout.minimumWidth
 
-                // TODO: replace configuration.showDate by true
-                contentItem.height: timeLabel.height + (contentItem.Plasmoid.configuration.showDate || timeZoneLabel.visible ? 0.8 * timeLabel.height : 0)
-                //contentItem.width: Math.max(timeLabel.width + (contentItem.Plasmoid.configuration.showDate ? timeZoneLabel.paintedWidth : 0),
-                //                timeZoneLabel.paintedWidth, dateLabel.paintedWidth) //+ Kirigami.Units.mediumSpacing
+                contentItem.height: timeLabel.height + 0.8 * timeLabel.height
                 contentItem.width: Math.max(timeLabel.paintedWidth + Kirigami.Units.mediumSpacing , dateLabel.paintedWidth + Kirigami.Units.mediumSpacing);
 
-
-                labelsGrid.rows: labelsGrid.Plasmoid.configuration.showDate ? 1 : 2
+                labelsGrid.rows: 1 
+                //labelsGrid.rows: labelsGrid.Plasmoid.configuration.showDate ? 1 : 2
 
                 timeLabel.height: sizehelper.height
                 timeLabel.width: sizehelper.contentWidth
                 timeLabel.font.pixelSize: timeLabel.height
 
-                timeZoneLabel.height: timeZoneLabel.Plasmoid.configuration.showDate ? 0.7 * timeLabel.height : 0.8 * timeLabel.height
-                timeZoneLabel.width: timeZoneLabel.Plasmoid.configuration.showDate ? timeZoneLabel.paintedWidth : timeLabel.width
+
+                timeZoneLabel.height: 0.7 * timeLabel.height
+                timeZoneLabel.width: timeZoneLabel.paintedWidth
                 timeZoneLabel.font.pixelSize: timeZoneLabel.height
 
                 dateLabel.height: 0.8 * timeLabel.height
@@ -238,8 +224,9 @@ MouseArea {
                  * the time label is slightly larger than the date or time zone label
                  * and still fits well into the panel with all the applied margins.
                  */
-                sizehelper.height: Math.min(timeZoneLabel.Plasmoid.configuration.showDate || timeZoneLabel.visible ? main.height * 0.56 : main.height * 0.71,
-                                            fontHelper.font.pixelSize)
+                 sizehelper.height: Math.min(main.height * 0.56, fontHelper.font.pixelSize)
+                //sizehelper.height: Math.min(timeZoneLabel.Plasmoid.configuration.showDate || timeZoneLabel.visible ? main.height * 0.56 : main.height * 0.71,
+                //                            fontHelper.font.pixelSize)
 
                 sizehelper.font.pixelSize: sizehelper.height
             }
@@ -323,7 +310,7 @@ MouseArea {
                 main.Layout.maximumHeight: contentItem.height
                 main.Layout.minimumHeight: main.Layout.maximumHeight
 
-                contentItem.height: contentItem.Plasmoid.configuration.showDate ? labelsGrid.height + dateLabel.contentHeight : labelsGrid.height
+                contentItem.height: main.oneLineMode ? labelsGrid.height : labelsGrid.height + dateLabel.contentHeight
                 contentItem.width: main.width
 
                 labelsGrid.rows: 2
@@ -403,7 +390,7 @@ MouseArea {
                 dateLabel.wrapMode: Text.WordWrap
 
                 sizehelper.height: {
-                    if (sizehelper.Plasmoid?.configuration.showDate) {
+                    if (main.oneLineMode) {
                         if (timeZoneLabel.visible) {
                             return 0.4 * main.height
                         }
@@ -524,7 +511,7 @@ MouseArea {
         PlasmaComponents.Label {
             id: dateLabel
 
-            visible: Plasmoid.configuration.showDate
+            visible: true
 
             font.family: timeLabel.font.family
             font.weight: timeLabel.font.weight
@@ -663,7 +650,7 @@ MouseArea {
                 timezoneString = clock.timeZoneOffset;
                 break;
             }
-            if ((Plasmoid.configuration.showDate || oneLineMode) && Plasmoid.formFactor === PlasmaCore.Types.Horizontal) {
+            if ( Plasmoid.formFactor === PlasmaCore.Types.Horizontal) {
                 timezoneString = `(${timezoneString})`;
             }
         }
@@ -729,12 +716,20 @@ MouseArea {
         // The date/month name can now be longer/shorter, so we need to adjust applet size
         // If we don't need to have seconds, it is useless to recalculate everything each seconds
         let currentDate;
-        const customDate = Plasmoid.configuration.customTimeFormat;
+        const customTime = Plasmoid.configuration.customTimeFormat;
         const currentTimeFormat = Plasmoid.configuration.timeFormat;
         const currentDateFormat = Plasmoid.configuration.dateFormat;
 
-        if (Plasmoid.configuration.showSeconds === 0 && Plasmoid.configuration.timeFormat === "custom" && (customDate.contains("s") || customDate.contains("ss"))){
-            currentDate = Qt.formatDateTime(clock.dateTime, "yyyy-MM-dd mm");
+        if (Plasmoid.configuration.showSeconds === 0 ){
+            if (Plasmoid.configuration.timeFormat === "timeCustom" ){
+                if (customTime.includes("s") || customTime.includes("ss")){
+                    currentDate = Qt.formatDateTime(clock.dateTime, "yyyy-MM-dd ss");
+                } else {
+                    currentDate = Qt.formatDateTime(clock.dateTime, "yyyy-MM-dd mm");
+                }
+            } else {
+                currentDate = Qt.formatDateTime(clock.dateTime, "yyyy-MM-dd mm");
+            }
         } else {
             currentDate = Qt.formatDateTime(clock.dateTime, "yyyy-MM-dd ss");
         }

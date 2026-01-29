@@ -44,10 +44,7 @@
       <default>HH mm</default>
     </entry>
 
-    <entry name="showDate" type="Bool"><!-- TODO: DELETE THIS (NOW USELESS) -->
-      <label>Whether the date should be shown next to the clock.</label>
-      <default>true</default>
-    </entry>
+    
     <entry name="dateFormat" type="string">
       <label>The date format to display. Options are: shortDate, longDate, isoDate or custom.</label>
       <default>shortDate</default>

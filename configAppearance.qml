@@ -40,11 +40,8 @@ KCMUtils.SimpleKCM {
     property alias cfg_displayTimezoneFormat: displayTimeZoneFormat.currentIndex
     property alias cfg_showSeconds: showSecondsComboBox.currentIndex
 
-    property alias cfg_showDate: showDate.checked // del
     property string cfg_dateFormat: "shortDate"
     property alias cfg_customDateFormat: customDateFormat.text
-    //property alias cfg_use24hFormat: use24hFormat.currentIndex
-    property alias cfg_dateDisplayFormat: dateDisplayFormat.currentIndex 
 
     //added
     property alias cfg_informationDisplayFormat: displayFormat.currentIndex
@@ -52,10 +49,10 @@ KCMUtils.SimpleKCM {
     property string cfg_timeFormat: "timeRegional"
     property alias cfg_customTimeFormat: customTimeFormat.text
 
-    property real comboBoxWidth: Math.max(dateDisplayFormat.implicitWidth,
-                                          showSecondsComboBox.implicitWidth,
+    property real comboBoxWidth: Math.max(showSecondsComboBox.implicitWidth,
                                           displayTimeZoneFormat.implicitWidth,
                                           //use24hFormat.implicitWidth,
+                                          //dateDisplayFormat.implicitWidth,
                                           dateFormat.implicitWidth)
 
 
@@ -66,40 +63,7 @@ KCMUtils.SimpleKCM {
 
     Kirigami.FormLayout {
         
-        // TODO: delete this RowLayout
-        RowLayout {
-            Kirigami.FormData.label: i18n("Information: (del)")
-            visible: false
-            spacing: Kirigami.Units.smallSpacing
 
-            QQC2.CheckBox {
-                id: showDate
-                checked: true
-                visible: false
-                text: i18n("Show date")
-            }
-
-
-            QQC2.ComboBox {
-                id: dateDisplayFormat
-                //enabled: showDate.checked
-                //visible: Plasmoid.formFactor !== PlasmaCore.Types.Vertical
-                visible: false
-                Layout.preferredWidth: appearancePage.comboBoxWidth
-                model: [
-                    i18n("Adaptive location"),
-                    i18n("Always beside time"),
-                    i18n("Always below time"),
-                ]
-                onActivated: appearancePage.cfg_dateDisplayFormat = currentIndex
-            }
-        }
-
-        Item {
-            Kirigami.FormData.isSection: true
-            visible: false
-        }
-        //////////////
 
         QQC2.ButtonGroup {
             id: infoGroup

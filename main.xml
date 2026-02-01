@@ -64,6 +64,16 @@
       <default>1</default>
     </entry>
 
+    <!-- Text size ratio-->
+    <entry name="textSizeRatio" type="Int">
+      <choices>
+        <choice name="Top bigger" />
+        <choice name="Same" />
+        <choice name="Bottom bigger" />
+      </choices>
+      <default>0</default>
+    </entry>
+
 
     <entry name="autoFontAndSize" type="Bool">
       <label>Use Plasma default font and automatically determine font size.</label>

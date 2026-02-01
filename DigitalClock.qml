@@ -177,6 +177,11 @@ MouseArea {
             Qt.callLater(main.updateLayoutState);
         }
 
+        function onShowSecondsChanged(){
+            main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
+        }
+
         function onUse24hFormatChanged() {
             main.timeFormatCorrectionFunction();
             Qt.callLater(main.updateLayoutState);
@@ -195,10 +200,13 @@ MouseArea {
         function onTextAlignmentChanged() {
             main.updateLayoutState();
         }
+
+        function onTextSizeRatioChanged(){
+            main.changeTextSizeRatio();
+            main.updateLayoutState();
+        }
     }
 
-
-    
 
     function pointToPixel(pointSize: int): int {
         const pixelsPerInch = Screen.pixelDensity * 25.4
@@ -216,8 +224,8 @@ MouseArea {
                 main.Layout.minimumWidth: contentItem.width
                 main.Layout.maximumWidth: main.Layout.minimumWidth
 
-                contentItem.height: timeLabel.height + 0.85 * timeLabel.height
-                contentItem.width: Math.max(timeLabel.paintedWidth  , dateLabel.paintedWidth);
+                contentItem.height: timeLabel.height + 0.80 * timeLabel.height
+                contentItem.width: Math.max(timeLabel.width, dateLabel.width, timeLabel.paintedWidth, dateLabel.paintedWidth) + Kirigami.Units.largeSpacing;
 
                 //labelsGrid.rows: 1
                 //labelsGrid.rows: labelsGrid.Plasmoid.configuration.showDate ? 1 : 2
@@ -237,11 +245,11 @@ MouseArea {
                 /*
                  * The value 0.71 was picked by testing to give the clock the right
                  * size (aligned with tray icons).
-                 * Value 0.54 seems to be chosen rather arbitrary as well such that
+                 * Value 0.56 seems to be chosen rather arbitrary as well such that
                  * the time label is slightly larger than the date or time zone label
                  * and still fits well into the panel with all the applied margins.
                  */
-                 sizehelper.height: Math.min(main.height * 0.54, fontHelper.font.pixelSize)
+                sizehelper.height: Math.min(main.height * 0.56, fontHelper.font.pixelSize)
 
                 sizehelper.font.pixelSize: sizehelper.height
             }
@@ -465,6 +473,10 @@ MouseArea {
         id: contentItem
         anchors.verticalCenter: main.verticalCenter 
 
+        onHeightChanged: {
+            Qt.callLater(main.changeTextAlignment);
+        }
+
         Grid {
             id: labelsGrid
 
@@ -587,10 +599,32 @@ MouseArea {
         
     }
 
+    function changeTextSizeRatio(textSizeRatio = Plasmoid.configuration.textSizeRatio){
+        if (Plasmoid.formFactor === PlasmaCore.Types.Horizontal && !main.oneLineMode){
+            labelsGrid.anchors.bottomMargin = 0;
+            labelsGrid.anchors.top = undefined;
+
+            if (textSizeRatio === 0){
+                labelsGrid.anchors.bottom = undefined;
+                timeLabel.height = Qt.binding(function() { return sizehelper.height; });
+                dateLabel.height = Qt.binding(function() { return timeLabel.height * 0.8; });
+            } else if (textSizeRatio === 1) {
+                labelsGrid.anchors.bottom = undefined;
+                timeLabel.height = Qt.binding(function() { return sizehelper.height * 0.9; });
+                dateLabel.height = Qt.binding(function() { return timeLabel.height * 0.9; });
+            } else {
+                timeLabel.height = Qt.binding(function() { return sizehelper.height * 0.8; });
+                dateLabel.height = Qt.binding(function() { return sizehelper.height; });
+                dateLabel.verticalAlignment = Text.AlignVCenter;
+                labelsGrid.anchors.bottom = contentItem.verticalCenter;
+                labelsGrid.anchors.bottomMargin = 2;
+            }
+        }
+    }
+
+
     function updateLayoutState() {
-        // reinitialize text alignment
         changeTextAlignment();
-        
     }
 
 
@@ -770,12 +804,6 @@ MouseArea {
         tzIndex = Plasmoid.configuration.selectedTimeZones.indexOf(Plasmoid.configuration.lastSelectedTimezone);
     }
 
-    Timer {
-        id: delayUpdateTimer
-        interval: 15
-        repeat: false
-        onTriggered: main.updateLayoutState()
-    }
 
     Component.onCompleted: {
         Plasmoid.configuration.selectedTimeZones = TimeZoneUtils.sortedTimeZones(Plasmoid.configuration.selectedTimeZones);
@@ -783,7 +811,7 @@ MouseArea {
         setTimeZoneIndex();
         dateTimeChanged();
         timeFormatUpdate();
-        delayUpdateTimer.start();
+        changeTextSizeRatio();
 
         dateFormatterChanged
             .connect(setupLabels);

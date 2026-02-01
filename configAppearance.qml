@@ -49,11 +49,11 @@ KCMUtils.SimpleKCM {
     property string cfg_timeFormat: "timeRegional"
     property alias cfg_customTimeFormat: customTimeFormat.text
     property int cfg_textAlignment
+    property alias cfg_textSizeRatio: textSizeRatio.currentIndex 
 
     property real comboBoxWidth: Math.max(showSecondsComboBox.implicitWidth,
                                           displayTimeZoneFormat.implicitWidth,
-                                          //use24hFormat.implicitWidth,
-                                          //dateDisplayFormat.implicitWidth,
+                                          textSizeRatio.implicitWidth,
                                           dateFormat.implicitWidth)
 
 
@@ -442,6 +442,34 @@ KCMUtils.SimpleKCM {
                 onToggled: if (checked) appearancePage.cfg_textAlignment = 2
             }
         }
+
+
+        Item {
+            Kirigami.FormData.isSection: true
+            visible: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Text size ratio:")
+            spacing: Kirigami.Units.smallSpacing
+            visible: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            enabled: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && appearancePage.cfg_informationDisplay == 2 &&
+                (appearancePage.cfg_informationDisplayFormat == 0 || appearancePage.cfg_informationDisplayFormat == 1)
+
+
+            QQC2.ComboBox {
+                id: textSizeRatio
+                Layout.preferredWidth: appearancePage.comboBoxWidth
+                model: [
+                    i18n("Top bigger than bottom"),
+                    i18n("Same size for both"),
+                    i18n("Bottom bigger than top")
+                ]
+                currentIndex: appearancePage.cfg_textSizeRatio
+                onActivated: appearancePage.cfg_textSizeRatio = currentIndex
+            }
+        }
+
 
 
         Item {

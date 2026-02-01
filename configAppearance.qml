@@ -48,6 +48,7 @@ KCMUtils.SimpleKCM {
     property int cfg_informationDisplay
     property string cfg_timeFormat: "timeRegional"
     property alias cfg_customTimeFormat: customTimeFormat.text
+    property int cfg_textAlignment
 
     property real comboBoxWidth: Math.max(showSecondsComboBox.implicitWidth,
                                           displayTimeZoneFormat.implicitWidth,
@@ -140,7 +141,7 @@ KCMUtils.SimpleKCM {
 
         ColumnLayout {
             Kirigami.FormData.label: i18n("Show time zone:")
-            //enabled: appearancePage.cfg_informationDisplay != 0
+            enabled: appearancePage.cfg_informationDisplay !== 0
             Kirigami.FormData.buddyFor: showLocalTimeZoneWhenDifferent
             spacing: Kirigami.Units.smallSpacing
 
@@ -195,6 +196,7 @@ KCMUtils.SimpleKCM {
             Kirigami.FormData.buddyFor: displayTimeZoneFormat
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
+            enabled: appearancePage.cfg_informationDisplay !== 0
 
             QQC2.ComboBox {
                 id: displayTimeZoneFormat
@@ -403,7 +405,49 @@ KCMUtils.SimpleKCM {
 
         Item {
             Kirigami.FormData.isSection: true
+            visible: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
         }
+
+        QQC2.ButtonGroup {
+            buttons: [alignLeft, alignCenter, alignRight]
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Text alignment:")
+            spacing: Kirigami.Units.smallSpacing
+            visible: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            enabled: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && appearancePage.cfg_informationDisplay == 2 &&
+                (appearancePage.cfg_informationDisplayFormat == 0 || appearancePage.cfg_informationDisplayFormat == 1)
+
+            QQC2.RadioButton {
+                id: alignLeft
+                text: i18n("Left")
+                checked: appearancePage.cfg_textAlignment == 0
+                onToggled: if (checked) appearancePage.cfg_textAlignment = 0 
+                
+            }
+
+            QQC2.RadioButton {
+                id: alignCenter
+                text: i18n("Center")
+                checked: appearancePage.cfg_textAlignment == 1
+                onToggled: if (checked) appearancePage.cfg_textAlignment = 1
+                
+            }
+
+            QQC2.RadioButton {
+                id: alignRight
+                text: i18n("Right")
+                checked: appearancePage.cfg_textAlignment == 2
+                onToggled: if (checked) appearancePage.cfg_textAlignment = 2
+            }
+        }
+
+
+        Item {
+            Kirigami.FormData.isSection: true
+        }
+
 
         QQC2.ButtonGroup {
             buttons: [autoFontAndSizeRadioButton, manualFontAndSizeRadioButton]

@@ -111,3 +111,5 @@ plasma_add_applet(com.clock.plus
         main.xml
     GENERATE_APPLET_CLASS
 )
+
+plasma_install_package(package com.clock.plus)

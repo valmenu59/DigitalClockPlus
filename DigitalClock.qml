@@ -124,7 +124,7 @@ MouseArea {
     property int wheelDelta: 0
 
     Accessible.role: Accessible.Button
-    Accessible.onPressAction: clicked(null)
+    Accessible.onPressAction: clicked(null)    
 
     Clock {
         id: clock
@@ -159,22 +159,41 @@ MouseArea {
 
         function onDisplayTimezoneFormatChanged() {
             main.setupLabels();
+            Qt.callLater(main.updateLayoutState);
         }
 
         function onLastSelectedTimezoneChanged() {
             main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
         }
 
         function onShowLocalTimezoneChanged() {
             main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
         }
 
         function onShowDateChanged() {
             main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
         }
 
         function onUse24hFormatChanged() {
             main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
+        }
+
+        function onInformationDisplayFormatChanged(){
+            main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
+        }
+
+        function onAutoFontAndSizeChanged(){
+            main.timeFormatCorrectionFunction();
+            Qt.callLater(main.updateLayoutState);
+        }
+        
+        function onTextAlignmentChanged() {
+            main.updateLayoutState();
         }
     }
 
@@ -197,36 +216,32 @@ MouseArea {
                 main.Layout.minimumWidth: contentItem.width
                 main.Layout.maximumWidth: main.Layout.minimumWidth
 
-                contentItem.height: timeLabel.height + 0.8 * timeLabel.height
-                contentItem.width: Math.max(timeLabel.paintedWidth + Kirigami.Units.mediumSpacing , dateLabel.paintedWidth + Kirigami.Units.mediumSpacing);
+                contentItem.height: timeLabel.height + 0.85 * timeLabel.height
+                contentItem.width: Math.max(timeLabel.paintedWidth  , dateLabel.paintedWidth);
 
-                labelsGrid.rows: 1 
+                //labelsGrid.rows: 1
                 //labelsGrid.rows: labelsGrid.Plasmoid.configuration.showDate ? 1 : 2
 
                 timeLabel.height: sizehelper.height
                 timeLabel.width: sizehelper.contentWidth
                 timeLabel.font.pixelSize: timeLabel.height
+                timeLabel.horizontalAlignment: Text.AlignHCenter
 
-
-                timeZoneLabel.height: 0.7 * timeLabel.height
-                timeZoneLabel.width: timeZoneLabel.paintedWidth
-                timeZoneLabel.font.pixelSize: timeZoneLabel.height
 
                 dateLabel.height: 0.8 * timeLabel.height
-                dateLabel.width: dateLabel.paintedWidth
+                dateLabel.width: dateLabel.paintedWidth //dateLabel.paintedWidth //sizehelper.contentWidth//dateLabel.paintedWidth
                 dateLabel.verticalAlignment: Text.AlignVCenter
+                dateLabel.horizontalAlignment: Text.AlignVCenter
                 dateLabel.font.pixelSize: dateLabel.height
 
                 /*
                  * The value 0.71 was picked by testing to give the clock the right
                  * size (aligned with tray icons).
-                 * Value 0.56 seems to be chosen rather arbitrary as well such that
+                 * Value 0.54 seems to be chosen rather arbitrary as well such that
                  * the time label is slightly larger than the date or time zone label
                  * and still fits well into the panel with all the applied margins.
                  */
-                 sizehelper.height: Math.min(main.height * 0.56, fontHelper.font.pixelSize)
-                //sizehelper.height: Math.min(timeZoneLabel.Plasmoid.configuration.showDate || timeZoneLabel.visible ? main.height * 0.56 : main.height * 0.71,
-                //                            fontHelper.font.pixelSize)
+                 sizehelper.height: Math.min(main.height * 0.54, fontHelper.font.pixelSize)
 
                 sizehelper.font.pixelSize: sizehelper.height
             }
@@ -242,7 +257,7 @@ MouseArea {
 
                 anchors.top: labelsGrid.bottom
                 anchors.horizontalCenter: labelsGrid.horizontalCenter
-            }
+            } 
         },
 
         State {
@@ -273,11 +288,6 @@ MouseArea {
                 timeLabel.height: sizehelper.height
                 timeLabel.width: timeLabel.paintedWidth//sizehelper.contentWidth
                 timeLabel.fontSizeMode: Text.VerticalFit
-
-                timeZoneLabel.height: 0.7 * timeLabel.height
-                timeZoneLabel.width: timeZoneLabel.paintedWidth
-                timeZoneLabel.fontSizeMode: Text.VerticalFit
-                timeZoneLabel.horizontalAlignment: Text.AlignHCenter
 
                 sizehelper.height: Math.min(main.height, fontHelper.contentHeight)
                 sizehelper.fontSizeMode: Text.VerticalFit
@@ -310,7 +320,7 @@ MouseArea {
                 main.Layout.maximumHeight: contentItem.height
                 main.Layout.minimumHeight: main.Layout.maximumHeight
 
-                contentItem.height: main.oneLineMode ? labelsGrid.height : labelsGrid.height + dateLabel.contentHeight
+                contentItem.height: main.oneLineMode ? labelsGrid.height : timeLabel.paintedHeight + dateLabel.paintedHeight + 4
                 contentItem.width: main.width
 
                 labelsGrid.rows: 2
@@ -318,21 +328,17 @@ MouseArea {
                 timeLabel.height: sizehelper.contentHeight
                 timeLabel.width: main.width
                 timeLabel.font.pixelSize: Math.min(timeLabel.height, fontHelper.font.pixelSize)
+
                 timeLabel.fontSizeMode: Text.Fit
                 timeLabel.elide: Text.ElideRight;
+                labelsGrid.rowSpacing: main.oneLineMode ? 0 : 7
                 
-
-                timeZoneLabel.height: Math.max(0.7 * timeLabel.height, dateLabel.minimumPixelSize)
-                timeZoneLabel.width: main.width
-                timeZoneLabel.fontSizeMode: Text.Fit
-                timeZoneLabel.minimumPixelSize: dateLabel.minimumPixelSize
-                timeZoneLabel.elide: Text.ElideRight
 
                 dateLabel.width: main.width
                 //NOTE: in order for Text.Fit to work as intended, the actual height needs to be quite big, in order for the font to enlarge as much it needs for the available width, and then request a sensible height, for which contentHeight will need to be considered as opposed to height
-                dateLabel.height: sizehelper.contentHeight//Kirigami.Units.gridUnit * 10
+                dateLabel.height: sizehelper.contentHeight  //Kirigami.Units.gridUnit * 10
                 dateLabel.fontSizeMode: Text.Fit
-                dateLabel.verticalAlignment: Text.AlignTop; //parseInt(Plasmoid.configuration.informationDisplayFormat) === 1 ? Text.AlignTop : Text.AlignVCenter;
+                dateLabel.verticalAlignment: Text.AlignVCenter //parseInt(Plasmoid.configuration.informationDisplayFormat) === 1 ? Text.AlignTop : Text.AlignVCenter;
                 // Those magic numbers are purely what looks nice as maximum size, here we have it the smallest
                 // between slightly bigger than the default font (1.4 times) and a bit smaller than the time font
                 dateLabel.font.pixelSize: Math.min(0.7 * timeLabel.height, contentItem.Kirigami.Theme.defaultFont.pixelSize * 1.4)
@@ -345,14 +351,13 @@ MouseArea {
 
             }
 
+            
             AnchorChanges {
                 target: dateLabel
 
-                anchors.top: labelsGrid.bottom
+                anchors.top: labelsGrid.verticalCenter
                 anchors.horizontalCenter: labelsGrid.horizontalCenter
             }
-
-            
             
             
         },
@@ -360,14 +365,15 @@ MouseArea {
         State {
             name: "other"
             when: Plasmoid.formFactor !== PlasmaCore.Types.Vertical && Plasmoid.formFactor !== PlasmaCore.Types.Horizontal
-
+            
             PropertyChanges {
                 main.Layout.fillHeight: false
                 main.Layout.fillWidth: false
                 main.Layout.minimumWidth: Kirigami.Units.gridUnit * 3
                 main.Layout.minimumHeight: Kirigami.Units.gridUnit * 3
 
-                contentItem.height: main.height
+
+                contentItem.height: main.height + dateLabel.height
                 contentItem.width: main.width
 
                 labelsGrid.rows: 2
@@ -375,34 +381,29 @@ MouseArea {
                 timeLabel.height: sizehelper.height
                 timeLabel.width: main.width
                 timeLabel.fontSizeMode: Text.Fit
+                timeLabel.verticalAlignment: Text.AlignBottom
+                //labelsGrid.rowSpacing: main.oneLineMode ? 0 : 30
 
-                timeZoneLabel.height: 0.7 * timeLabel.height
-                timeZoneLabel.width: main.width
-                timeZoneLabel.fontSizeMode: Text.Fit
-                timeZoneLabel.minimumPixelSize: 1
 
                 dateLabel.height: 0.7 * timeLabel.height
                 dateLabel.font.pixelSize: 1024
                 dateLabel.width: Math.max(timeLabel.contentWidth, Kirigami.Units.gridUnit * 3)
-                dateLabel.verticalAlignment: Text.AlignVCenter
+                dateLabel.verticalAlignment: Text.AlignTop
                 dateLabel.fontSizeMode: Text.Fit
                 dateLabel.minimumPixelSize: 1
                 dateLabel.wrapMode: Text.WordWrap
 
-                sizehelper.height: {
-                    if (main.oneLineMode) {
-                        if (timeZoneLabel.visible) {
-                            return 0.4 * main.height
-                        }
-                        return 0.56 * main.height
-                    } else if (timeZoneLabel.visible) {
-                        return 0.59 * main.height
-                    }
-                    return main.height
-                }
+                sizehelper.height: main.oneLineMode ? 0.56 * main.height : main.height
                 sizehelper.width: main.width
                 sizehelper.fontSizeMode: Text.Fit
                 sizehelper.font.pixelSize: 1024
+
+            }
+
+            AnchorChanges {
+                target: labelsGrid
+
+                anchors.horizontalCenter: contentItem.horizontalCenter
             }
 
             AnchorChanges {
@@ -410,13 +411,18 @@ MouseArea {
 
                 anchors.top: labelsGrid.bottom
                 anchors.horizontalCenter: labelsGrid.horizontalCenter
-            }
+            } 
+            
         }
+        
     ]
 
     onStateChanged: {
-        updateVerticalLayout();
+        // Need to wait that all QLM properties will apply before to execute the function
+        Qt.callLater(main.updateLayoutState);
     }
+
+
 
     onPressed: wasExpanded = root.expanded
     onClicked: root.expanded = !wasExpanded
@@ -457,25 +463,19 @@ MouseArea {
     */
     Item {
         id: contentItem
-        anchors.verticalCenter: main.verticalCenter
-        //anchors.horizontalCenter: main.horizontalCenter
-        //width: main.width
-        //height: childrenRect.heigh
+        anchors.verticalCenter: main.verticalCenter 
 
         Grid {
             id: labelsGrid
 
-            rows: 1
             horizontalItemAlignment: Grid.AlignHCenter
             verticalItemAlignment: Grid.AlignVCenter
 
             flow: Grid.TopToBottom
-            // between time and timezone; timezone is styled differently, so
-            // smallSpacing is more appropriate than a space
-            columnSpacing: Kirigami.Units.smallSpacing
 
+            
             PlasmaComponents.Label  {
-                id: timeLabel
+                id: timeLabel 
 
                 font {
                     family: fontHelper.font.family
@@ -492,26 +492,12 @@ MouseArea {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
-
-            PlasmaComponents.Label {
-                id: timeZoneLabel
-
-                font.weight: timeLabel.font.weight
-                font.italic: timeLabel.font.italic
-                font.pixelSize: 1024
-                minimumPixelSize: 1
-
-                visible: text.length > 0
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                textFormat: Text.PlainText
-            }
         }
 
         PlasmaComponents.Label {
             id: dateLabel
 
-            visible: true
+            visible: true 
 
             font.family: timeLabel.font.family
             font.weight: timeLabel.font.weight
@@ -565,20 +551,46 @@ MouseArea {
         font.italic: timeLabel.font.italic
     }
 
-    function updateVerticalLayout() {
-        if (Plasmoid.formFactor === PlasmaCore.Types.Vertical){
-            if (parseInt(Plasmoid.configuration.informationDisplayFormat) === 0){ // time top
-                dateLabel.verticalAlignment = Text.AlignBottom;
 
-                timeLabel.verticalAlignment = Text.AlignTop;
-            } else if (parseInt(Plasmoid.configuration.informationDisplayFormat) === 1){ // date top
-                timeLabel.wrapMode = Text.WordWrap;
-                timeLabel.verticalAlignment = Text.AlignBottom;
+    function changeTextAlignment(textPosition = Plasmoid.configuration.textAlignment){
+        if (Plasmoid.formFactor === PlasmaCore.Types.Horizontal && !main.oneLineMode){
+            labelsGrid.anchors.horizontalCenter = undefined;
+            labelsGrid.anchors.left = undefined;
+            labelsGrid.anchors.right = undefined;
 
-                dateLabel.wrapMode = Text.NoWrap
-                dateLabel.verticalAlignment = Text.AlignTop;
+            timeLabel.horizontalAlignment = undefined;
+            dateLabel.horizontalAlignment = undefined
+            dateLabel.width = undefined;
+
+
+            // 0 -> left, 1 -> center, 2 -> right
+            if (textPosition === 0){
+                timeLabel.horizontalAlignment = Text.AlignLeft;
+                dateLabel.horizontalAlignment = Text.AlignLeft;
+                dateLabel.width = sizehelper.contentWidth;
+
+                labelsGrid.anchors.left = contentItem.left;
+            } else if (textPosition === 1){
+                timeLabel.horizontalAlignment = Text.AlignHCenter;
+                dateLabel.horizontalAlignment = Text.AlignVCenter;
+                dateLabel.width =  dateLabel.implicitWidth;
+
+                labelsGrid.anchors.horizontalCenter = contentItem.horizontalCenter;
+            } else {
+                timeLabel.horizontalAlignment = Text.AlignRight;
+                dateLabel.horizontalAlignment = Text.AlignRight;
+                dateLabel.width = sizehelper.contentWidth;
+
+                labelsGrid.anchors.right = contentItem.right;
             }
         }
+        
+    }
+
+    function updateLayoutState() {
+        // reinitialize text alignment
+        changeTextAlignment();
+        
     }
 
 
@@ -655,14 +667,15 @@ MouseArea {
             }
         }
         // an empty string clears the label and that makes it hidden
-        timeZoneLabel.text = timezoneString;
+        //timeZoneLabel.text = timezoneString;
 
         // timeLabel always in top
         // dateLabel always in bottom
         // only dateLabel can be empty (else positionning is bad)
         const display = Plasmoid.configuration.informationDisplay;
         const currentDate = main.dateFormatter(clock.dateTime);
-        const currentTime = main.timeFormatter(clock.dateTime, Plasmoid.configuration.showSeconds === 2);
+        const currentTime = timezoneString === "" ? main.timeFormatter(clock.dateTime, Plasmoid.configuration.showSeconds === 2)
+            : main.timeFormatter(clock.dateTime, Plasmoid.configuration.showSeconds === 2)  + " " + timezoneString;
         switch (display){
             case 0: // only date
                 timeLabel.text = currentDate;
@@ -757,12 +770,20 @@ MouseArea {
         tzIndex = Plasmoid.configuration.selectedTimeZones.indexOf(Plasmoid.configuration.lastSelectedTimezone);
     }
 
+    Timer {
+        id: delayUpdateTimer
+        interval: 15
+        repeat: false
+        onTriggered: main.updateLayoutState()
+    }
+
     Component.onCompleted: {
         Plasmoid.configuration.selectedTimeZones = TimeZoneUtils.sortedTimeZones(Plasmoid.configuration.selectedTimeZones);
 
         setTimeZoneIndex();
         dateTimeChanged();
         timeFormatUpdate();
+        delayUpdateTimer.start();
 
         dateFormatterChanged
             .connect(setupLabels);

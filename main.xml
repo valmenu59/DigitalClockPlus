@@ -11,9 +11,11 @@
       <default>false</default>
     </entry>
 
+    <!-- Information -->
     <entry name="informationDisplay" type="Int">
       <default>2</default>
     </entry>
+    <!-- Information: choose text disposition -->
     <entry name="informationDisplayFormat" type="string">
       <label>How information should be displayed.</label>
       <choices>
@@ -25,6 +27,7 @@
       <default>0</default>
     </entry>
     
+    <!-- Show seconds -->
     <entry name="showSeconds" type="Enum">
       <label>How seconds should be shown in the clock.</label>
       <choices>
@@ -35,6 +38,8 @@
       <default>1</default>
     </entry>
 
+
+    <!-- Time format -->
     <entry name="timeFormat" type="string">
       <label>The time format to display. Options are: 12-Hour, regionalFormat, 24-Hour or custom.</label>
       <default>timeRegional</default>
@@ -44,7 +49,7 @@
       <default>HH mm</default>
     </entry>
 
-    
+    <!-- Date format -->
     <entry name="dateFormat" type="string">
       <label>The date format to display. Options are: shortDate, longDate, isoDate or custom.</label>
       <default>shortDate</default>
@@ -54,6 +59,10 @@
       <default>ddd d</default>
     </entry>
 
+    <!-- Text alignment -->
+    <entry name="textAlignment" type="Int">
+      <default>1</default>
+    </entry>
 
 
     <entry name="autoFontAndSize" type="Bool">

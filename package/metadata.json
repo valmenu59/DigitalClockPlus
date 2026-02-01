@@ -1,0 +1,31 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Valentin Menu",
+                "Name[fr]": "Valentin Menu"
+            }
+        ],
+        "Category": "Date and Time",
+        "Description": "Time displayed in a digital format (Plasma's fork of Digital Clock)",
+        "Description[fr]": "Affichage de l'heure au format numérique (fork de l'Horloge Numérique de Plasma)",
+        "FormFactors": [
+            "tablet",
+            "handset",
+            "desktop"
+        ],
+        "Icon": "preferences-system-time",
+        "Id": "com.clock.plus",
+        "License": "GPL-2.0+",
+        "Version": 1,
+        "Name": "Digital Clock +",
+        "Name[fr]": "Horloge Numérique +",
+        "Website": ""
+    },
+    "X-KDE-ParentApp": "org.kde.plasmashell",
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.time",
+        "org.kde.plasma.date"
+    ]
+}

@@ -12,7 +12,7 @@ Link of original project: https://invent.kde.org/plasma/plasma-workspace at ./ap
 * To change position of date and time (with more options) ✅
 * To customize the time format ✅
 * To change the ratio size at time and time 🏗️
-* To change text aligment (left, right or centered) 
+* To change text aligment (left, right or centered) (only horizontal mode) ✅
 * To put all characters without transformation on custom date and time format
 
 A screenshot: 
@@ -22,6 +22,8 @@ A screenshot:
 ## Build and installation
 
 Requirements: to configure KDE software on your computer: https://develop.kde.org/docs/getting-started/
+
+Clone the project: `git clone https://github.com/valmenu59/DigitalClockPlus`
 
 Full command: 
 ```
@@ -33,7 +35,7 @@ sudo cmake --install .
 plasmoidviewer -a com.clock.plus
 ```
 
-One line on ./build:
+One line command on ./build:
 ``` 
 cmake --build . && sudo cmake --install . && plasmoidviewer -a com.clock.plus
 ```

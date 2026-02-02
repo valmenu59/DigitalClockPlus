@@ -57,8 +57,8 @@ KCMUtils.SimpleKCM {
                                           dateFormat.implicitWidth)
 
 
-    TimeFormat {
-        id: timeFormatter
+    DateTimeFormatter {
+        id: dateTimeFormatter
     }
 
 
@@ -232,7 +232,7 @@ KCMUtils.SimpleKCM {
                         label: i18nc("@item:inlistbox time display option", "Use region defaults"),
                         name: "timeRegional",
                          formatter(d) {
-                            const format = timeFormatter.timeFormatCorrection(Qt.locale().timeFormat(Locale.ShortFormat), appearancePage.cfg_showSeconds === 2);
+                            const format = dateTimeFormatter.timeFormatCorrection(Qt.locale().timeFormat(Locale.ShortFormat), appearancePage.cfg_showSeconds === 2);
                             return Qt.formatTime(d, format);
                         }
                     },
@@ -258,7 +258,7 @@ KCMUtils.SimpleKCM {
                         label: i18nc("@item:inlistbox time display option", "Custom"),
                         name: "timeCustom",
                          formatter(d) {
-                            return Qt.formatTime(d, customTimeFormat.text);
+                            return dateTimeFormatter.customDateTimeFormatting(d, customTimeFormat.text);
                         }
                     }
                     
@@ -296,7 +296,7 @@ KCMUtils.SimpleKCM {
         }
 
         QQC2.Label {
-            text: i18n("<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Time Format Documentation</a>")
+            text: i18n("<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Date and Time Format Documentation</a>")
             enabled: appearancePage.cfg_informationDisplay != 0
             visible: appearancePage.cfg_timeFormat === "timeCustom"
             wrapMode: Text.Wrap
@@ -309,6 +309,16 @@ KCMUtils.SimpleKCM {
             }
 
             onLinkActivated: link => Qt.openUrlExternally(link)
+        }
+
+        QQC2.Label {
+            text: i18n("You can put all characters inside ${} without formatting like ${h} -> h")
+            enabled: appearancePage.cfg_informationDisplay != 0
+            visible: appearancePage.cfg_timeFormat === "timeCustom"
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+            font: Kirigami.Theme.smallFont
+
         }
         
 
@@ -351,7 +361,7 @@ KCMUtils.SimpleKCM {
                         label: i18nc("@item:inlistbox custom date format", "Custom"),
                         name: "custom",
                         formatter(d) {
-                            return Qt.locale().toString(d, customDateFormat.text);
+                            return dateTimeFormatter.customDateTimeFormatting(d, customDateFormat.text);
                         },
                     },
                 ]
@@ -388,7 +398,7 @@ KCMUtils.SimpleKCM {
         }
 
         QQC2.Label {
-            text: i18n("<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Time Format Documentation</a>")
+            text: i18n("<a href=\"https://doc.qt.io/qt-6/qml-qtqml-qt.html#formatDateTime-method\">Date and Time Format Documentation</a>")
             enabled: appearancePage.cfg_informationDisplay != 1
             visible: appearancePage.cfg_dateFormat === "custom"
             wrapMode: Text.Wrap
@@ -401,6 +411,15 @@ KCMUtils.SimpleKCM {
             }
 
             onLinkActivated: link => Qt.openUrlExternally(link)
+        }
+
+        QQC2.Label {
+            text: i18n("You can put all characters inside ${} without formatting like ${d} -> d")
+            enabled: appearancePage.cfg_informationDisplay != 1
+            visible: appearancePage.cfg_dateFormat === "custom"
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
+            font: Kirigami.Theme.smallFont
         }
 
         Item {

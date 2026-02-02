@@ -8,15 +8,22 @@ Link of original project: https://invent.kde.org/plasma/plasma-workspace at ./ap
 
 ## Functionalities in more
 
-* To show only the date ✅
-* To change position of date and time (with more options) ✅
-* To customize the time format ✅
-* To change the ratio size at time and time (only horizontal mode) ✅
-* To change text aligment (left, right or centered) (only horizontal mode) ✅
-* To put all characters without transformation on custom date and time format 🏗️
+* To show only the date
+* To change position of date and time (with more options)
+* To customize the time format
+* To change the ratio size at time and time (only horizontal mode)
+* To change text aligment (left, right or centered) (only horizontal mode)
+* To put all characters without transformation on custom date and time format
+
+
+An illustration: 
+![Illustration](./pictures/illustration.png)
+
+
 
 A screenshot: 
 ![Screenshot](./pictures/screen.png)
+
 
 
 ## Build and installation

@@ -106,7 +106,7 @@ plasma_add_applet(com.clock.plus
         NoTimezoneWarning.qml
         Tooltip.qml
         config.qml
-        TimeFormat.qml
+        DateTimeFormatter.qml
     RESOURCES
         main.xml
     GENERATE_APPLET_CLASS

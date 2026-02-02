@@ -2,10 +2,34 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-// This function is now here becauses it is used by 2 files 
+// These functions are here if they used by 2 qml files or more
 
 Item{
     id: root
+
+    function customDateTimeFormatting(fullDateTime, customStringFormat){
+        const regex = /\$\{([^}]+)\}/g; // take all elements with ${*}, * = text with 1 character or more
+        let format = customStringFormat;
+
+        const array = [];
+        const matches = format.match(regex, format); // match with all ${*} and put that in an array, return null if no match
+        if (matches){
+            matches.forEach((elem) => { 
+                array.push(elem.slice(2, -1)); // remove "${" and "}" for each elements
+            });
+        }
+        format = format.replace(regex, "/ꟽ"); // replace ${*} by / and a random rarely used latin character (here ꟽ: U+A7FD)
+
+        let transform = Qt.locale().toString(fullDateTime, format); // date/time transformation with Qt
+
+        let index = 0;
+        array.forEach((elem) => { 
+            transform = transform.replace(/\/ꟽ/i, array[index]); // replace each /ꟽ by array elements
+            index++;
+        });
+
+        return transform;
+    }
 
 
     // Qt's QLocale does not offer any modular time creating like Klocale did
@@ -33,14 +57,6 @@ Item{
         let result = hours.toLowerCase() + delimiter + minutes;
 
         let resultSec = result + delimiter + seconds;
-
-        // add "AM/PM" either if the setting is the default and locale uses it OR if the user unchecked "use 24h format"
-        /*
-        if ((Plasmoid.configuration.use24hFormat === Qt.PartiallyChecked && !uses24hFormatByDefault) || Plasmoid.configuration.use24hFormat === Qt.Unchecked) {
-            result += " " + amPm;
-            result_sec += " " + amPm;
-        }
-        */
 
         return useSeconds ? resultSec : result;
     }

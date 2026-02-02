@@ -46,7 +46,7 @@
     </entry>
     <entry name="customTimeFormat" type="string">
       <label>Custom time format string.</label>
-      <default>HH mm</default>
+      <default>HH${h}mm</default>
     </entry>
 
     <!-- Date format -->

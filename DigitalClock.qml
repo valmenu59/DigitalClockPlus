@@ -27,8 +27,8 @@ MouseArea {
     property string timeFormat
     property string timeFormatWithSeconds
 
-    TimeFormat {
-        id: timeFormatFile
+    DateTimeFormatter {
+        id: dateTimeFormatter
     }
 
     // This is quite convoluted in Qt 6:
@@ -39,7 +39,7 @@ MouseArea {
         if (Plasmoid.configuration.dateFormat === "custom") {
             Plasmoid.configuration.customDateFormat; // create a binding dependency on this property.
             return (d) => {
-                return Qt.locale().toString(d, Plasmoid.configuration.customDateFormat);
+                return dateTimeFormatter.customDateTimeFormatting(d, Plasmoid.configuration.customDateFormat);
             };
         } else if (Plasmoid.configuration.dateFormat === "isoDate") {
             return (d) => {
@@ -82,7 +82,7 @@ MouseArea {
 
 
             if (valueTimeFormatter === 0) {
-                return Qt.locale().toString(d, Plasmoid.configuration.customTimeFormat);
+                return dateTimeFormatter.customDateTimeFormatting(d, Plasmoid.configuration.customTimeFormat);
             } else if (valueTimeFormatter === 1){
                 let seconds = showSecondsEnabled ? ":ss" : "";
                 let time = "hh:mm" + seconds + " AP";
@@ -631,7 +631,7 @@ MouseArea {
 
     
     function timeFormatCorrectionFunction(timeFormatString = Qt.locale().timeFormat(Locale.ShortFormat), useSeconds = true, returnResult = false) {
-        const timeFormatResult = timeFormatFile.timeFormatCorrection(timeFormatString, useSeconds);
+        const timeFormatResult = dateTimeFormatter.timeFormatCorrection(timeFormatString, useSeconds);
         
         if (returnResult)
             return timeFormatResult

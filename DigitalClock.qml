@@ -196,7 +196,23 @@ MouseArea {
             main.timeFormatCorrectionFunction();
             Qt.callLater(main.updateLayoutState);
         }
-        
+
+        function onDateFormatChanged(){
+            Qt.callLater(main.updateLayoutState);
+        }
+
+        function onCustomDateFormatChanged(){
+            Qt.callLater(main.updateLayoutState);
+        }
+
+        function onTimeFormatChanged(){
+            Qt.callLater(main.updateLayoutState);
+        }
+
+        function onCustomTimeFormatChanged(){
+            Qt.callLater(main.updateLayoutState);
+        }
+
         function onTextAlignmentChanged() {
             main.updateLayoutState();
         }

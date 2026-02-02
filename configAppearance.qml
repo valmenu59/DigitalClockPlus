@@ -35,20 +35,27 @@ KCMUtils.SimpleKCM {
     property alias cfg_fontStyleName: fontDialog.fontChosen.styleName
     property alias cfg_fontSize: fontDialog.fontChosen.pointSize
 
-    
-    property alias cfg_showLocalTimezone: showLocalTimeZone.checked
-    property alias cfg_displayTimezoneFormat: displayTimeZoneFormat.currentIndex
+    // information display
+    property int cfg_informationDisplay
+    property alias cfg_informationDisplayFormat: displayFormat.currentIndex
+
+    // show seconds
     property alias cfg_showSeconds: showSecondsComboBox.currentIndex
 
+    // local time zone
+    property alias cfg_showLocalTimezone: showLocalTimeZone.checked
+    property alias cfg_displayTimezoneFormat: displayTimeZoneFormat.currentIndex
+   
+    // date and time format
     property string cfg_dateFormat: "shortDate"
-    property alias cfg_customDateFormat: customDateFormat.text
-
-    //added
-    property alias cfg_informationDisplayFormat: displayFormat.currentIndex
-    property int cfg_informationDisplay
+    property alias cfg_customDateFormat: customDateFormat.text  
     property string cfg_timeFormat: "timeRegional"
     property alias cfg_customTimeFormat: customTimeFormat.text
+
+    // text alignment
     property int cfg_textAlignment
+
+    // text size ratio
     property alias cfg_textSizeRatio: textSizeRatio.currentIndex 
 
     property real comboBoxWidth: Math.max(showSecondsComboBox.implicitWidth,
